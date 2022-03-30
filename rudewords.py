@@ -16,23 +16,34 @@ def bleeper(word):
 
 def check_line(line):
     rude_count = 0
+    word_index = 0
     words = line.split(" ")
     for word in words:
-        word = word.strip(string.punctuation).lower()
-        if word in rude_words:
+        stripped_word = word.strip(string.punctuation).lower()
+        if stripped_word in rude_words:
             rude_count += 1
             print(f"Found rude word: {word}")
-    return rude_count
+            words[word_index] = bleeper(word)
+        word_index += 1
+    line = " ".join(words)
+    return line, rude_count
 
 
 def check_file(filename):
     with open(filename) as myfile:
         rude_count = 0
+        lines = []
         for line in myfile:
-            rude_count += check_line(line)
+            line, rude_subtotal = check_line(line)
+            rude_count += rude_subtotal
+            lines.append(line)
     if rude_count == 0:
         print("Congratulations, your file has no rude words.")
         print("At least, no rude words I know.")
+    else:
+        with open("bleeped_copy.txt", "w") as bleep_copy:
+            bleep_copy.write("\n".join(lines))
+        print(f"Found {rude_count} rude words in file. See bleeped_copy.txt for censored copy")
 
 
 if __name__ == "__main__":
